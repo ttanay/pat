@@ -69,3 +69,15 @@ Context:
 3.  An expectation of the result of the query that runs on the HTTP response
 Result: Whether there are any deviations from expectations.
 In most cases, users will also want to see what exactly are the deviations from their expectations.
+
+## Implementation
+### v0
+Assumptions:
+1.  An HTTP request is specified in curl flags format.
+2.  `curl` is used as the backed to communicate with the server
+
+Use Cases:
+1. Exploration
+
+## Challenges
+1. How would authorization work? Most APIs make use of a Authorization header. How would that be generated so that the user doesn't need to be bothered by it?

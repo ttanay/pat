@@ -65,7 +65,7 @@ fi
 shift $(( OPTIND - 1 ))
 
 exit_code=0
-requests=(`find "$filepath" -type f -name "*.curlf" -and -not -name "$0"`)
+requests=(`find "$filepath" -type f -path "*.curlf" -and -not -path "$0"`)
 for request in "${requests[@]}"
 do
     echo "Running $request"

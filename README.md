@@ -1,4 +1,4 @@
-# Pat - An HTTP API development tool
+# `pat` - An HTTP API development tool
 Pat is a simple bare-bones HTTP development tool that helps you:  
 1.  Explore and Develop your HTTP API from the command line 
 2.  Test your HTTP API using requests and assertions as files

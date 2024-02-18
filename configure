@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+PAT_NAME="pat"
+ln -s "`pwd`/$PAT_NAME" "/usr/local/bin/$PAT_NAME"
+

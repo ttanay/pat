@@ -63,11 +63,13 @@ while getopts f:hpsSt opt; do
 done
 
 # Unset flags if commands not available
-if [ "$pretty_print" = true ] && ! command -v "${formatter%% *}" &> /dev/null ; then
+formatter_exists=$(which "${formatter%% *}")
+if [ "$pretty_print" = true ] && [ -z "$formatter_exists" ] ; then
     echo "Specified pretty printer \`$formatter\` not found; Skipping pretty printing..."
     pretty_print=false
 fi
-if [ "$scroll_mode" = true ] && ! command -v "${scroller%% *}" &> /dev/null ; then
+scroller_exists=$(which "${scroller%% *}")
+if [ "$scroll_mode" = true ] && [ -z "$scroller_exists" ] ; then
     echo "Specified terminal pager \`$scroller\` not found; Skipping terminal pager..."
     scroll_mode=false
 fi

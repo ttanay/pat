@@ -1,5 +1,11 @@
 #!/usr/bin/bash
 
+curl_exists=$(which curl)
+if [ -z "$curl_exists" ]; then
+    echo "ERROR: curl is required as a dependency but is not available"
+    echo "  https://github.com/curl/curl"
+    exit 1
+fi
 PAT_NAME="pat"
 ln -s "`pwd`/$PAT_NAME" "/usr/local/bin/$PAT_NAME"
 

@@ -119,7 +119,7 @@ do
         echo -e "$request ${YELLOW}RUN${NC}"
         echo "WARN: ref file doesn't exist"
         if $save_if_absent; then
-            echo "$response" | jq . > $ref_file
+            echo "$response" | (eval "$formatter") > $ref_file
             echo "Saved response to file"
         else
             echo "Use -S option to save to file"
@@ -134,6 +134,11 @@ do
             echo "$response" | (eval "$scroller")
         else
             echo "$response"
+        fi
+
+        if [ ! -f "$ref_file" ] && [ "$save_if_absent" = true  ]; then
+            echo "$response" | (eval "$formatter") > $ref_file
+            echo "Saved response to file"
         fi
     fi
 

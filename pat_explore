@@ -73,7 +73,7 @@ exit_code=0
 requests=(`find "$filepath" -type f -path "*.curlf" -and -not -path "$0"`)
 for request in "${requests[@]}"
 do
-    echo "Running $request"
+    echo "Running $request ..."
     # Read file
     request_spec=`cat $request`
 

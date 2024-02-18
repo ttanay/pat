@@ -105,7 +105,13 @@ do
 
 
     ref_file="${request::-6}.ref"
-    formatted_resp=$(echo "$response" | jq .)
+    query_file="${request::-6}.query"
+    query="jq ."
+    if [ -f "$query_file" ]; then
+        query=$(cat "$query_file")
+    fi
+
+    formatted_resp=$(echo "$response" | eval "$query")
     if [ "$test_mode" = true ] && [ -f "$ref_file" ]; then
         expected=$(cat "$ref_file")
         if [[ "$expected" == "$formatted_resp" ]]; then

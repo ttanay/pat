@@ -19,6 +19,10 @@ Supported options:
     * -S: Save the response of a request to corresponding file.
         The response is saved to the same filepath with the same filename
         with the extension .ref.
+    * -t: Test mode. Compares the response of the request with the reference
+        file. A test is considered to have passed if the response matches the
+        one in the reference file. Otherwise, the test fails and displays the
+        diff of the two responses.
     * -h: Print help message
 EOF
 )
@@ -45,12 +49,14 @@ curl_progress=false
 scroll_mode=false
 pretty_print=false
 save_if_absent=false
-while getopts f:hpsS opt; do
+test_mode=false
+while getopts f:hpsSt opt; do
     case $opt in
         h) echo "$usage"; exit;;
         p) pretty_print=true;;
         s) scroll_mode=true;;
         S) save_if_absent=true;;
+        t) test_mode=true;;
         :) echo "Missing argument for option -$OPTARG"; echo "$usage"; exit 1;;
        \?) echo "Unknown option -$OPTARG"; echo "$usage"; exit 1;;
     esac
@@ -88,29 +94,49 @@ do
     response=$(eval "$curl_cmd" 2>&1)
 
     curl_exit_code=`echo $?`
+    failed=false
     if [ "$curl_exit_code" != 0 ]; then
+        echo -e "$request ${RED}FAIL${NC}; Reason:"
         echo "Curl encountered an error: "
         echo "$response"
-        exit_code=1
+        failed=true
         continue
     fi
 
-    # Print response in desired manner
-    if [ "$pretty_print" = true ] && [ "$scroll_mode" = true ]; then
-        echo "$response" | (eval "$formatter") | (eval "$scroller")
-    elif [ "$pretty_print" = true ] && [ "$scroll_mode" = false ]; then
-        echo "$response" | (eval "$formatter")
-    elif [ "$pretty_print" = false ] && [ "$scroll_mode" = true ]; then
-        echo "$response" | (eval "$scroller")
-    else
-        echo "$response"
-    fi
 
     ref_file="${request::-6}.ref"
-    if [ ! -f "$ref_file" ] && [ "$save_if_absent" = true  ]; then
-        echo "$response" | jq . > $ref_file
-        echo "Saved response to file"
+    formatted_resp=$(echo "$response" | jq .)
+    if [ "$test_mode" = true ] && [ -f "$ref_file" ]; then
+        expected=$(cat "$ref_file")
+        if [[ "$expected" == "$formatted_resp" ]]; then
+            echo -e "$request ${GREEN}PASS${NC}"
+        else
+            failed=true
+            echo -e "$request ${RED}FAIL${NC}; Diff:"
+            diff --color $ref_file <(echo "$formatted_resp")
+        fi
+    elif [ "$test_mode" = true ]; then
+        echo -e "$request ${YELLOW}RUN${NC}"
+        echo "WARN: ref file doesn't exist"
+        if $save_if_absent; then
+            echo "$response" | jq . > $ref_file
+            echo "Saved response to file"
+        else
+            echo "Use -S option to save to file"
+        fi
+    else
+        # Print response in desired manner
+         if [ "$pretty_print" = true ] && [ "$scroll_mode" = true ]; then
+            echo "$response" | (eval "$formatter") | (eval "$scroller")
+        elif [ "$pretty_print" = true ] && [ "$scroll_mode" = false ]; then
+            echo "$response" | (eval "$formatter")
+        elif [ "$pretty_print" = false ] && [ "$scroll_mode" = true ]; then
+            echo "$response" | (eval "$scroller")
+        else
+            echo "$response"
+        fi
     fi
+
 done
 
 exit $exit_code

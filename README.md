@@ -7,6 +7,8 @@ Pat is designed with developers in mind.
 Pat is intended to help you develop your APIs without leaving the comfort   
 of your editor and command line.
 
+**Disclaimer**: `pat` is experimental at the moment.
+
 ## Installing
 There is only one hard dependency - `curl`. 
 We also use `jq` as the default formatter and query language for responses. But, you are free to switch this out with the `RESP_FMT` variable. For more, look at the help message. 

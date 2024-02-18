@@ -16,6 +16,9 @@ Supported options:
         The response is piped to a pretty printer.
         You can specify your own with the RESP_FMT variable.
         The default is \`jq .\` if it is available on the system.
+    * -S: Save the response of a request to corresponding file.
+        The response is saved to the same filepath with the same filename
+        with the extension .ref.
     * -h: Print help message
 EOF
 )
@@ -41,11 +44,13 @@ curl_args=""
 curl_progress=false
 scroll_mode=false
 pretty_print=false
-while getopts f:hps opt; do
+save_if_absent=false
+while getopts f:hpsS opt; do
     case $opt in
         h) echo "$usage"; exit;;
         p) pretty_print=true;;
         s) scroll_mode=true;;
+        S) save_if_absent=true;;
         :) echo "Missing argument for option -$OPTARG"; echo "$usage"; exit 1;;
        \?) echo "Unknown option -$OPTARG"; echo "$usage"; exit 1;;
     esac
@@ -99,6 +104,12 @@ do
         echo "$response" | (eval "$scroller")
     else
         echo "$response"
+    fi
+
+    ref_file="${request::-6}.ref"
+    if [ ! -f "$ref_file" ] && [ "$save_if_absent" = true  ]; then
+        echo "$response" | jq . > $ref_file
+        echo "Saved response to file"
     fi
 done
 

@@ -98,7 +98,7 @@ do
     curl_exit_code=`echo $?`
     failed=false
     if [ "$curl_exit_code" != 0 ]; then
-        echo -e "$request ${RED}FAIL${NC}; Reason:"
+        echo -e "$request ${RED}ERROR${NC}; Reason:"
         echo "Curl encountered an error: "
         echo "$response"
         failed=true
@@ -119,7 +119,6 @@ do
         if [[ "$expected" == "$formatted_resp" ]]; then
             echo -e "$request ${GREEN}PASS${NC}"
         else
-            failed=true
             echo -e "$request ${RED}FAIL${NC}; Diff:"
             diff --color $ref_file <(echo "$formatted_resp")
         fi

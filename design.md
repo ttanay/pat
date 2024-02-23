@@ -77,7 +77,20 @@ Assumptions:
 2.  `curl` is used as the backed to communicate with the server
 
 Use Cases:
-1. Exploration
+1.  Exploration
+
+### v0.0.1
+Use cases:
+1.  Testing
+
+Assumptions:
+1. `jq` is sufficient as a query backend.
+
+To add support for test mode, the users needs to be able to do the following:
+1. Save responses from exploration mode to be used for testing
+2. Specify reference responses that the actual responses should be compared against
+3. Specify queries that should be run against the actual response and then be matched against the expectation
+    If the query file is found, the response is piped through the query and is also applied to the ref file.
 
 ## Challenges
 1. How would authorization work? Most APIs make use of a Authorization header. How would that be generated so that the user doesn't need to be bothered by it?

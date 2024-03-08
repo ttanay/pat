@@ -23,6 +23,7 @@ Supported options:
         file. A test is considered to have passed if the response matches the
         one in the reference file. Otherwise, the test fails and displays the
         diff of the two responses.
+    * -v: Verbose output
     * -h: Print help message
 EOF
 )
@@ -50,13 +51,15 @@ scroll_mode=false
 pretty_print=false
 save_if_absent=false
 test_mode=false
-while getopts f:hpsSt opt; do
+verbose=false
+while getopts f:hpsStv opt; do
     case $opt in
         h) echo "$usage"; exit;;
         p) pretty_print=true;;
         s) scroll_mode=true;;
         S) save_if_absent=true;;
         t) test_mode=true;;
+        v) verbose=true;;
         :) echo "Missing argument for option -$OPTARG"; echo "$usage"; exit 1;;
        \?) echo "Unknown option -$OPTARG"; echo "$usage"; exit 1;;
     esac
@@ -86,7 +89,9 @@ exit_code=0
 requests=(`find "$filepath" -type f -path "*.curlf" -and -not -path "$0"`)
 for request in "${requests[@]}"
 do
-    echo "Running $request ..."
+    if [ "$verbose" = true  ]; then
+        echo "Running $request ..."
+    fi
     # Read file
     request_spec=`cat $request`
 
@@ -127,7 +132,9 @@ do
         echo "WARN: ref file doesn't exist"
         if $save_if_absent; then
             echo "$response" | (eval "$formatter") > $ref_file
-            echo "Saved response to file"
+            if [ "$verbose" = true  ]; then
+                echo "Saved response to file"
+            fi
         else
             echo "Use -S option to save to file"
         fi
@@ -145,7 +152,9 @@ do
 
         if [ ! -f "$ref_file" ] && [ "$save_if_absent" = true  ]; then
             echo "$response" | (eval "$formatter") > $ref_file
-            echo "Saved response to file"
+            if [ "$verbose" = true  ]; then
+                echo "Saved response to file"
+            fi
         fi
     fi
 

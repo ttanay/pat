@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+# Setup
+python3 -m venv .env
+source .env/bin/activate
+pip install -r test/requirements.txt
+FLASK_APP=test/server.py flask run &
+sleep 10
+./pat test
+
+kill %1
+deactivate
